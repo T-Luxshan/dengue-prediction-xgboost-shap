@@ -16,20 +16,20 @@ st.set_page_config(page_title="Dengue Cases Predictor", layout="wide", page_icon
 # Custom CSS for Premium Look
 st.markdown("""
     <style>
-    .main {
-        background-color: #f8f9fa;
+    .main, [data-testid="stAppViewContainer"], .stApp {
+        background-color: #f8f9fa !important;
     }
-    .stButton>button {
-        width: 100%;
-        border-radius: 5px;
-        height: 3em;
-        background-color: #ff4b4b;
-        color: white;
-        font-weight: bold;
+    .stButton>button, div.stButton > button {
+        width: 100% !important;
+        border-radius: 5px !important;
+        height: 3em !important;
+        background-color: #ff4b4b !important;
+        color: white !important;
+        font-weight: bold !important;
     }
-    .risk-low { color: #28a745; font-weight: bold; }
-    .risk-medium { color: #ffc107; font-weight: bold; }
-    .risk-high { color: #dc3545; font-weight: bold; }
+    .risk-low { color: #28a745 !important; font-weight: bold !important; }
+    .risk-medium { color: #ffc107 !important; font-weight: bold !important; }
+    .risk-high { color: #dc3545 !important; font-weight: bold !important; }
     </style>
     """, unsafe_allow_html=True)
 

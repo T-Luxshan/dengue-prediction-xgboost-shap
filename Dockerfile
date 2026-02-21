@@ -16,11 +16,15 @@ COPY requirements.txt .
 # Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the rest of the application code
+# Copy the application code
 COPY . .
+
+# Explicitly ensure .streamlit config is present
+COPY .streamlit/ .streamlit/
 
 # Expose the port Streamlit runs on
 EXPOSE 8501
 
 # Command to run the application
-CMD ["streamlit", "run", "app.py", "--server.port=8501", "--server.address=0.0.0.0"]
+# Added --server.headless=true to ensure it runs correctly in Docker
+CMD ["streamlit", "run", "app.py", "--server.port=8501", "--server.address=0.0.0.0", "--server.headless=true"]
