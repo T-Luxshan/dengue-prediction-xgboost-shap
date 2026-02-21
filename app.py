@@ -3,6 +3,8 @@ import pandas as pd
 import numpy as np
 import xgboost as xgb
 import shap
+import matplotlib
+matplotlib.use('Agg')  # Use non-interactive backend for Docker/headless environments
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.preprocessing import LabelEncoder
@@ -88,15 +90,14 @@ with st.sidebar:
     with col1:
         year = st.number_input("Year", min_value=2019, max_value=2025, value=2024)
     with col2:
-        # Use session state for the month to allow "Next Month" button
-        if 'month' not in st.session_state:
-            st.session_state.month = 6
-        
-        month = st.slider("Month", 1, 12, key='month_slider', value=st.session_state.month)
-        st.session_state.month = month
+        # Initialize using the slider's own key to avoid session state conflicts
+        if 'month_slider' not in st.session_state:
+            st.session_state.month_slider = 6
+
+        month = st.slider("Month", 1, 12, key='month_slider')
 
     if st.button("Next Month ➡️"):
-        st.session_state.month = (st.session_state.month % 12) + 1
+        st.session_state.month_slider = (st.session_state.month_slider % 12) + 1
         st.rerun()
 
     # Get defaults
