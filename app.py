@@ -136,7 +136,7 @@ if st.button("Predict Cases"):
     res_col1, res_col2 = st.columns(2)
     
     with res_col1:
-        st.metric("Predicted Dengue Cases", f"{prediction:.2f}")
+        st.metric("Predicted Dengue Cases", f"{int(round(prediction))}")
         st.markdown(f"Risk Level: <span class='{risk_class}'>{risk_text}</span>", unsafe_allow_html=True)
     
     # --- SHAP Interpretation ---
@@ -158,7 +158,7 @@ if st.button("Predict Cases"):
         top_pos = [f"**{f}**" for f, v in contribs if v > 0][:2]
         top_neg = [f"**{f}**" for f, v in contribs if v < 0][:2]
         
-        explanation = f"The model predicts **{prediction:.2f}** cases for **{selected_district}** in month **{month}**."
+        explanation = f"The model predicts **{int(round(prediction))}** cases for **{selected_district}** in month **{month}**."
         
         if top_pos:
             explanation += f" This is primarily driven by an upward push from {', '.join(top_pos)}."
