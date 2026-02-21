@@ -102,9 +102,6 @@ with st.sidebar:
     precip = st.slider("Average Precipitation", 0.0, 15.0, float(defaults['Precipitation_avg']))
     humidity = st.slider("Average Humidity (%)", 30.0, 100.0, float(defaults['Humidity_avg']))
 
-    # Extrapolation warning in sidebar
-    if year > 2021:
-        st.warning(f"⚠️ Year {year} is beyond the training data range (2019–2021). Predictions are extrapolations and may be less accurate.")
 
 # --- Prediction ---
 if st.button("Predict Cases"):
@@ -122,11 +119,6 @@ if st.button("Predict Cases"):
     prediction = model.predict(input_data)[0]
     prediction = max(0, prediction) # No negative cases
 
-    # Show extrapolation warning alongside results
-    if year > 2021:
-        years_beyond = year - 2021
-        reliability = "moderate" if years_beyond <= 3 else "low"
-        st.warning(f"⚠️ **Extrapolation Warning:** The model was trained on 2019–2021 data. Predicting for {year} ({years_beyond} year(s) beyond training data) has **{reliability} reliability**. Use as a directional estimate only.")
     
     # Risk Level
     if prediction <= t_low:
