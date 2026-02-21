@@ -90,15 +90,7 @@ with st.sidebar:
     with col1:
         year = st.number_input("Year", min_value=2019, max_value=2025, value=2024)
     with col2:
-        # Initialize using the slider's own key to avoid session state conflicts
-        if 'month_slider' not in st.session_state:
-            st.session_state.month_slider = 6
-
-        month = st.slider("Month", 1, 12, key='month_slider')
-
-    if st.button("Next Month ➡️"):
-        st.session_state.month_slider = (st.session_state.month_slider % 12) + 1
-        st.rerun()
+        month = st.slider("Month", 1, 12, value=6)
 
     # Get defaults
     meta = district_data[selected_district]
