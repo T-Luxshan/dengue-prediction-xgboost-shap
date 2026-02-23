@@ -9,6 +9,9 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+import pickle
+import io
+import os
 
 # Page Config
 st.set_page_config(page_title="Dengue Cases Predictor", layout="wide", page_icon="🦟")
@@ -35,6 +38,21 @@ st.markdown("""
 
 @st.cache_resource
 def load_and_train():
+    model_path = "dengue_xgboost_model.pkl"
+    
+    # Check if a saved model exists
+    if os.path.exists(model_path):
+        try:
+            with open(model_path, "rb") as f:
+                bundle = pickle.load(f)
+            return (bundle['model'], bundle['le_province'], bundle['le_district'], 
+                    bundle['features'], bundle['district_data'], bundle['weather_avg'], 
+                    bundle['threshold_low'], bundle['threshold_high'])
+        except Exception:
+            # If loading fails, proceed to train
+            pass
+
+    # If no model found, train from scratch
     df = pd.read_csv('dengue_data_with_weather_data.csv')
     df = df.dropna(subset=['Cases'])
     
@@ -68,6 +86,20 @@ def load_and_train():
     # Historical weather averages per district and month
     weather_avg = df.groupby(['District', 'Month'])[['Temp_avg', 'Precipitation_avg', 'Humidity_avg']].mean().to_dict('index')
     
+    # Save the full state bundle to disk
+    model_bundle = {
+        'model': model,
+        'le_province': le_province,
+        'le_district': le_district,
+        'features': features,
+        'district_data': district_data,
+        'weather_avg': weather_avg,
+        'threshold_low': threshold_low,
+        'threshold_high': threshold_high
+    }
+    with open(model_path, "wb") as f:
+        pickle.dump(model_bundle, f)
+        
     return model, le_province, le_district, features, district_data, weather_avg, threshold_low, threshold_high
 
 # Load model and data
@@ -101,6 +133,32 @@ with st.sidebar:
     temp = st.slider("Average Temperature (°C)", 15.0, 40.0, float(defaults['Temp_avg']))
     precip = st.slider("Average Precipitation", 0.0, 15.0, float(defaults['Precipitation_avg']))
     humidity = st.slider("Average Humidity (%)", 30.0, 100.0, float(defaults['Humidity_avg']))
+
+    st.divider()
+    st.subheader("Model Export")
+    # Bundle current state for download
+    model_bundle = {
+        'model': model,
+        'le_province': le_province,
+        'le_district': le_district,
+        'features': features,
+        'district_data': district_data,
+        'weather_avg': weather_avg,
+        'threshold_low': t_low,
+        'threshold_high': t_high
+    }
+    
+    # Save to buffer for download
+    buffer = io.BytesIO()
+    pickle.dump(model_bundle, buffer)
+    
+    st.download_button(
+        label="📥 Download Model Bundle (.pkl)",
+        data=buffer.getvalue(),
+        file_name="dengue_xgboost_model.pkl",
+        mime="application/octet-stream",
+        help="Downloads a pickle file containing the trained model, label encoders, and feature list."
+    )
 
 
 # --- Prediction ---
